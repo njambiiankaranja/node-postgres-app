@@ -134,6 +134,14 @@ terraform apply
    http://YOUR_TASK_PUBLIC_IP:3000
    ```
 
+## Security
+
+- **Private database:** RDS runs in private subnets with no route to the internet and `publicly_accessible = false`.
+- **Least-privilege networking:** the database security group accepts port 5432 only from the ECS task's security group.
+- **No hard-coded credentials:** Terraform generates the database password and stores the connection string in AWS Secrets Manager. ECS injects it into the container at runtime, and the task's execution role can read only that one secret.
+- **Encrypted connections:** the app connects to RDS over SSL (enabled automatically when the host is an RDS endpoint).
+- **Observability:** container logs are sent to CloudWatch Logs (`/ecs/node-postgres-app`).
+
 ## Cleanup and Resource Destruction
 
 To completely tear down all provisioned AWS resources (VPC, subnets, RDS database, ECS cluster, and ECR repository) and prevent any ongoing cloud charges, run the following destruction command inside the `terraform/` directory:
