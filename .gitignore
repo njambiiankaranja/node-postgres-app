@@ -1,8 +1,8 @@
 node_modules/
 .env
 .DS_Store
+
 # Terraform files
-terraform/.terraform/
-terraform/*.tfstate
-terraform/*.tfstate.*
-terraform/.terraform.lock.hcl
+.terraform/
+*.tfstate
+*.tfstate.*
