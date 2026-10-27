@@ -211,6 +211,12 @@ output "ecr_repository_url" {
   value = aws_ecr_repository.app_repo.repository_url
 }
 
+# 9b. CloudWatch log group so we can see container output and errors
+resource "aws_cloudwatch_log_group" "app" {
+  name              = "/ecs/node-postgres-app"
+  retention_in_days = 7
+}
+
 # 10. IAM Role for ECS Task Execution
 resource "aws_iam_role" "ecs_execution_role" {
   name = "node-postgres-ecs-execution-role"
@@ -303,6 +309,14 @@ resource "aws_ecs_task_definition" "app_task" {
           valueFrom = aws_secretsmanager_secret.db_url.arn
         }
       ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = aws_cloudwatch_log_group.app.name
+          "awslogs-region"        = "us-east-1"
+          "awslogs-stream-prefix" = "app"
+        }
+      }
     }
   ])
 

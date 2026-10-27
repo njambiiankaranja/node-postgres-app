@@ -5,9 +5,14 @@ const path = require("path");
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Enable SSL only when connecting to AWS RDS (RDS PostgreSQL 15 rejects
+// unencrypted connections). Local Docker Compose keeps working without SSL.
+const useSSL = (process.env.DATABASE_URL || "").includes("rds.amazonaws.com");
+
 // Setup PostgreSQL connection pool using environment variables
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
+  ssl: useSSL ? { rejectUnauthorized: false } : false,
 });
 
 app.use(express.json());
